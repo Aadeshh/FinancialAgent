@@ -1,0 +1,15 @@
+# core agent framework
+langgraph
+langchain
+langchain-core
+langchain-openai
+
+#data & tools
+yfinance # stock data
+tavily-python # search engine for AI agents
+pydantic # data validation
+python.dotenv # environment variable management
+
+#dev tools
+notebook # testing graphs 
+defusedxml # security for XML parsing
