@@ -12,5 +12,4 @@ pydantic # data validation
 python.dotenv # environment variable management
 
 #dev tools
-notebook # testing graphs 
 defusedxml # security for XML parsing

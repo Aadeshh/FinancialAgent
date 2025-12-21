@@ -1,18 +1,15 @@
 import os
-import json
 from dotenv import load_dotenv
-from typing import TypedDict, List, Annotated
+from typing import TypedDict, List
 from langgraph.graph import StateGraph, END
 from langchain_tavily import TavilySearch
 import yfinance as yf
-from tavily import TavilyClient
-from datetime import datetime
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 
 load_dotenv()
-tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+#tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 if not os.getenv("OPENAI_API_KEY"):
     raise ValueError("OPENAI_API_KEY environment variable not set")
@@ -214,17 +211,29 @@ workflow.add_edge("publisher", END)
 
 app = workflow.compile()
 
-if __name__ == "__main__":
-    inp = {"ticker": "NVDA"}
+def lambda_handler(event, context):
+    """
+    AWS Lambda Entry Point.
+    event: The JSON payload sent by EventBridge.
+    context: Runtime info(time remaining, etc).
+    """
+    # Extract ticker from event, or default to NVDA for testing
+    ticker = event.get("ticker", "NVDA")
+    print(f"Lambda invoked for ticker: {ticker}")
 
-    print("--- Starting Workflow Execution ---")
-    result = app.invoke(inp)
+    init_state = {"ticker": ticker}
     
-    print("\n\n--- Workflow Execution Completed ---")
-    print(f"Ticker: {result['ticker']}")
-    print(f"Price: {result['price_data']}")
-    print(f"News: {result['news_data'][0][:100]}...")
+    result = app.invoke(init_state)
 
-    print(f"Analyst Reasoning: {result['analyst_reasoning']}")
+    return {
+        "statusCode": 200,
+        "body": result["final_report"]
+    }
+    # print("\n\n--- Workflow Execution Completed ---")
+    # print(f"Ticker: {result['ticker']}")
+    # print(f"Price: {result['price_data']}")
+    # print(f"News: {result['news_data'][0][:100]}...")
+
+    # print(f"Analyst Reasoning: {result['analyst_reasoning']}")
     
-    print("\n\n###############################################")
+    # print("\n\n###############################################")
