@@ -1,5 +1,5 @@
 
-#   # 🚀 Daily Financial Briefing: NVDA
+# 🚀 Daily Financial Briefing: NVDA
 
 ## 📊 Market Data
 * **Price:** $180.99
