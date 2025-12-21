@@ -3,6 +3,7 @@ langgraph
 langchain
 langchain-core
 langchain-openai
+langchain-tavily
 
 #data & tools
 yfinance # stock data
