@@ -10,18 +10,18 @@ The system uses a **Cyclic State Graph** (not a linear chain). Agents can reject
 
 ```mermaid
 graph TD
-    Trigger[AWS EventBridge (Cron)] -->|Wake Up| Planner
-    Planner -->|Task Allocation| NewsWorker[News Agent (Tavily)]
-    Planner -->|Task Allocation| DataWorker[Data Agent (YFinance)]
+    Trigger["AWS EventBridge (Cron)"] -->|Wake Up| Planner
+    Planner -->|Task Allocation| NewsWorker["News Agent (Tavily)"]
+    Planner -->|Task Allocation| DataWorker["Data Agent (YFinance)"]
     NewsWorker -->|Raw Data| Analyst
     DataWorker -->|Raw Data| Analyst
     Analyst -->|Draft Analysis| Critic
     Critic -->|Review| Router{Approved?}
-    Router -->|No (Feedback)| Analyst
+    Router -->|"No (Feedback)"| Analyst
     Router -->|Yes| Publisher
     Publisher -->|Formatted Report| Slack[Slack Webhook]
-
 ```
+
 ## 🚀 Key Features
 
 * **Self-Correcting Intelligence:** Implemented a `Critic` node that reviews the `Analyst`'s output. If the sentiment is unsupported by data (e.g., "Bullish" but price dropped 5%), the draft is rejected and sent back for revision.
