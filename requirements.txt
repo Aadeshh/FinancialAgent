@@ -10,6 +10,7 @@ yfinance # stock data
 tavily-python # search engine for AI agents
 pydantic # data validation
 python.dotenv # environment variable management
+requests
 
 #dev tools
 defusedxml # security for XML parsing
