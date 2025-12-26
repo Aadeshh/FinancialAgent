@@ -8,6 +8,8 @@ from langchain_tavily import TavilySearch
 import yfinance as yf
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
+from metrics import log_metrics
+import time
 
 
 load_dotenv()
@@ -186,7 +188,7 @@ def publisher_node(state: AgentState):
         ]
     }
 
-    webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+    webhook_url = os.getenv("SLACK_WEBHOOK_API")
     if webhook_url:
         try:
             requests.post(webhook_url, json=slack_message)
@@ -241,6 +243,7 @@ def lambda_handler(event, context):
     event: The JSON payload sent by EventBridge.
     context: Runtime info(time remaining, etc).
     """
+    start = time.time()
     # Extract ticker from event, or default to NVDA for testing
     portfolio = event.get("portfolio", ["NVDA"])
 
@@ -257,15 +260,12 @@ def lambda_handler(event, context):
             print(f"Error processing {ticker}: {str(e)}")
             results.append(f"{ticker}: Failed")
 
+    full_text = str(results)
+    est_tokens = len(full_text.split())*1.3
+
+    log_metrics(ticker, start, results, est_tokens * 0.8, est_tokens * 0.2) # 80/20 split
+
     return {
         "statusCode": 200,
         "body": json.dumps(results)
     }
-    # print("\n\n--- Workflow Execution Completed ---")
-    # print(f"Ticker: {result['ticker']}")
-    # print(f"Price: {result['price_data']}")
-    # print(f"News: {result['news_data'][0][:100]}...")
-
-    # print(f"Analyst Reasoning: {result['analyst_reasoning']}")
-    
-    # print("\n\n###############################################")
